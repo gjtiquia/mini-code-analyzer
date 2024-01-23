@@ -4,7 +4,7 @@
   "author": "GJ Tiquia",
   "license": "MIT",
   "scripts": {
-    "start": "npm run build && node dist/index.js",
+    "start": "tsup src/main.ts && node dist/main.js",
     "build": "tsup src/index.ts",
     "test": "jest"
   },

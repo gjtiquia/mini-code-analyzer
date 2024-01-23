@@ -1,37 +1,20 @@
 import path from "path"
 import fsAsync from "fs/promises"
 import { isDirectory, readLinesAsync } from "./utils";
+import { Parameters, FileData, Logger } from "./interfaces";
+import { NullLogger } from "./loggers";
 
-interface Parameters {
-    rootDirectory: string,
-    targetExtensions: string[],
-    linesOfCodeThreshold: number
-
-    ignoreDirectories?: string[],
-}
-
-interface FileData {
-    relativePath: string,
-    extension: string,
-    linesOfCode: number,
-}
-
-main({
-    rootDirectory: path.join(__dirname, "../__tests__/directory-to-test"),
-    linesOfCodeThreshold: 10,
-    targetExtensions: [".ts"],
-});
-
-async function main(parameters: Parameters) {
+export async function analyzeAsync(parameters: Parameters): Promise<FileData[]> {
 
     printHeader(parameters);
 
     const rootDirectoryPath = parameters.rootDirectory;
     const targetExtensions = parameters.targetExtensions;
+    const logger: Logger = parameters.logger ?? new NullLogger();
 
     const result = await analyzeDirectoryAsync(parameters, rootDirectoryPath);
 
-    console.clear();
+    logger.clear();
 
     printHeader(parameters);
 
@@ -39,19 +22,22 @@ async function main(parameters: Parameters) {
         .filter(x => targetExtensions.length > 0 ? targetExtensions.includes(x.extension) : true)
         .filter(x => x.linesOfCode >= parameters.linesOfCodeThreshold)
 
-    console.table(filteredResults);
+    logger.table(filteredResults);
+
+    return filteredResults;
 }
 
 function printHeader(parameters: Parameters) {
-    console.log("\n\nMini Code Analyzer\n")
+    const logger: Logger = parameters.logger ?? new NullLogger();
 
-    console.log("Directory:", parameters.rootDirectory);
-    console.log("Target Extensions:", parameters.targetExtensions);
-    console.log("Lines of Code Threshold:", parameters.linesOfCodeThreshold);
+    logger.log("\n\nMini Code Analyzer\n")
 
-    console.log("");
+    logger.log("Directory:", parameters.rootDirectory);
+    logger.log("Target Extensions:", parameters.targetExtensions);
+    logger.log("Lines of Code Threshold:", parameters.linesOfCodeThreshold);
+
+    logger.log("");
 }
-
 
 async function analyzeDirectoryAsync(parameters: Parameters, directoryPath: string): Promise<FileData[]> {
 
@@ -60,7 +46,9 @@ async function analyzeDirectoryAsync(parameters: Parameters, directoryPath: stri
     if (parameters.ignoreDirectories && parameters.ignoreDirectories.includes(path.basename(directoryPath)))
         return output;
 
-    console.log(`Analyzing ${directoryPath}...`);
+    const logger: Logger = parameters.logger ?? new NullLogger();
+
+    logger.log(`Analyzing ${directoryPath}...`);
 
     const files = await fsAsync.readdir(directoryPath);
 
