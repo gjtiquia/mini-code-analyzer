@@ -19,13 +19,23 @@ export async function analyzeAsync(parameters: Parameters): Promise<FileData[]> 
     printHeader(parameters);
 
     const filteredResults = result
-        .filter(x => targetExtensions.length > 0 ? targetExtensions.includes(x.extension) : true)
+        .filter(x => isTargetExtension(targetExtensions, x.extension))
         .filter(x => x.linesOfCode >= parameters.linesOfCodeThreshold)
 
-    logger.table(filteredResults);
+    if (filteredResults.length == 0) {
+        logger.log("No results match the given parameters!")
+    }
+    else {
+        logger.table(filteredResults);
+
+        logger.log("")
+        logger.log("Total number of files:", filteredResults.length)
+    }
 
     return filteredResults;
 }
+
+
 
 function printHeader(parameters: Parameters) {
     const logger: Logger = parameters.logger ?? new NullLogger();
@@ -64,10 +74,14 @@ async function analyzeDirectoryAsync(parameters: Parameters, directoryPath: stri
             continue;
         }
 
+        const extension = path.extname(filePath);
+        if (!isTargetExtension(parameters.targetExtensions, extension))
+            // Optimization. Don't need to read the file contents if already does not fulfill the filter condition
+            continue;
+
         const lines = await readLinesAsync(filePath);
 
         const relativePath = path.relative(parameters.rootDirectory, filePath);
-        const extension = path.extname(filePath);
         const linesOfCode = lines.length;
 
         output.push({ relativePath, extension, linesOfCode })
@@ -76,3 +90,6 @@ async function analyzeDirectoryAsync(parameters: Parameters, directoryPath: stri
     return output;
 }
 
+function isTargetExtension(targetExtensions: string[], extension: string): unknown {
+    return targetExtensions.length > 0 ? targetExtensions.includes(extension) : true;
+}
