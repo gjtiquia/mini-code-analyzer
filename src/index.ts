@@ -3,8 +3,11 @@ import fsAsync from "fs/promises"
 import { isDirectory, readLinesAsync } from "./utils";
 
 interface Parameters {
-    rootDirectory: string
-    targetExtensions: string[]
+    rootDirectory: string,
+    targetExtensions: string[],
+    linesOfCodeThreshold: number
+
+    ignoreDirectories?: string[],
 }
 
 interface FileData {
@@ -15,32 +18,49 @@ interface FileData {
 
 main({
     rootDirectory: path.join(__dirname, "../__tests__/directory-to-test"),
-    targetExtensions: [".cs"]
+    linesOfCodeThreshold: 10,
+    targetExtensions: [".ts"],
 });
 
 async function main(parameters: Parameters) {
 
+    printHeader(parameters);
+
     const rootDirectoryPath = parameters.rootDirectory;
     const targetExtensions = parameters.targetExtensions;
 
-    console.log("Mini Code Analyzer\n")
+    const result = await analyzeDirectoryAsync(parameters, rootDirectoryPath);
 
-    console.log("Directory:", rootDirectoryPath);
-    console.log("");
+    console.clear();
 
-    const result = await analyzeDirectoryAsync(rootDirectoryPath, rootDirectoryPath);
-    // result.forEach(x => console.log(x));
+    printHeader(parameters);
 
     const filteredResults = result
         .filter(x => targetExtensions.length > 0 ? targetExtensions.includes(x.extension) : true)
+        .filter(x => x.linesOfCode >= parameters.linesOfCodeThreshold)
 
     console.table(filteredResults);
 }
 
+function printHeader(parameters: Parameters) {
+    console.log("\n\nMini Code Analyzer\n")
 
-async function analyzeDirectoryAsync(rootPath: string, directoryPath: string): Promise<FileData[]> {
+    console.log("Directory:", parameters.rootDirectory);
+    console.log("Target Extensions:", parameters.targetExtensions);
+    console.log("Lines of Code Threshold:", parameters.linesOfCodeThreshold);
+
+    console.log("");
+}
+
+
+async function analyzeDirectoryAsync(parameters: Parameters, directoryPath: string): Promise<FileData[]> {
 
     const output: FileData[] = [];
+
+    if (parameters.ignoreDirectories && parameters.ignoreDirectories.includes(path.basename(directoryPath)))
+        return output;
+
+    console.log(`Analyzing ${directoryPath}...`);
 
     const files = await fsAsync.readdir(directoryPath);
 
@@ -50,7 +70,7 @@ async function analyzeDirectoryAsync(rootPath: string, directoryPath: string): P
 
         if (isDirectory(filePath)) {
 
-            const recursiveResult = await analyzeDirectoryAsync(rootPath, filePath);
+            const recursiveResult = await analyzeDirectoryAsync(parameters, filePath);
             output.push(...recursiveResult);
 
             continue;
@@ -58,7 +78,7 @@ async function analyzeDirectoryAsync(rootPath: string, directoryPath: string): P
 
         const lines = await readLinesAsync(filePath);
 
-        const relativePath = path.relative(rootPath, filePath);
+        const relativePath = path.relative(parameters.rootDirectory, filePath);
         const extension = path.extname(filePath);
         const linesOfCode = lines.length;
 
