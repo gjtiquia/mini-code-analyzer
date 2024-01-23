@@ -1,5 +1,3 @@
 describe("Integration Test", () => {
-    it("should pass", () => {
-        expect(true).toBeTruthy();
-    })
+    it.todo("should count the lines of code correctly")
 })
