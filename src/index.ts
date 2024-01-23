@@ -2,27 +2,41 @@ import path from "path"
 import fsAsync from "fs/promises"
 import { isDirectory, readLinesAsync } from "./utils";
 
-const rootDirectoryPath = path.join(__dirname, "../__tests__/directory-to-test");
+interface Parameters {
+    rootDirectory: string
+    targetExtensions: string[]
+}
 
 interface FileData {
     relativePath: string,
-    linesOfCode: number
+    extension: string,
+    linesOfCode: number,
 }
 
-async function main() {
+main({
+    rootDirectory: path.join(__dirname, "../__tests__/directory-to-test"),
+    targetExtensions: [".cs"]
+});
+
+async function main(parameters: Parameters) {
+
+    const rootDirectoryPath = parameters.rootDirectory;
+    const targetExtensions = parameters.targetExtensions;
 
     console.log("Mini Code Analyzer\n")
-
 
     console.log("Directory:", rootDirectoryPath);
     console.log("");
 
     const result = await analyzeDirectoryAsync(rootDirectoryPath, rootDirectoryPath);
     // result.forEach(x => console.log(x));
-    console.table(result);
+
+    const filteredResults = result
+        .filter(x => targetExtensions.length > 0 ? targetExtensions.includes(x.extension) : true)
+
+    console.table(filteredResults);
 }
 
-main();
 
 async function analyzeDirectoryAsync(rootPath: string, directoryPath: string): Promise<FileData[]> {
 
@@ -45,9 +59,10 @@ async function analyzeDirectoryAsync(rootPath: string, directoryPath: string): P
         const lines = await readLinesAsync(filePath);
 
         const relativePath = path.relative(rootPath, filePath);
+        const extension = path.extname(filePath);
         const linesOfCode = lines.length;
 
-        output.push({ relativePath, linesOfCode })
+        output.push({ relativePath, extension, linesOfCode })
     }
 
     return output;
