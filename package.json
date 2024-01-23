@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "tsup src/main.ts && node dist/main.js",
-    "build": "tsup src/index.ts",
+    "build": "tsup src/index.ts src/main.ts",
     "test": "jest"
   },
   "devDependencies": {
