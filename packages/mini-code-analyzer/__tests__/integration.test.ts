@@ -1,5 +1,5 @@
 import path from "path"
-import { analyzeAsync } from "../src/analyzeAsync";
+import { analyzeAsync } from "../dist";
 
 describe("Integration Test", () => {
     it("should count the lines of code correctly", async () => {

@@ -5,7 +5,17 @@
         "apps/*",
         "packages/*"
     ],
+    "scripts": {
+        "build": "turbo run build",
+        "test": "turbo run test",
+        "changeset": "changeset",
+        "changeset:version": "changeset version",
+        "changeset:publish": "turbo run build test && changeset publish"
+    },
     "dependencies": {
         "@changesets/cli": "^2.27.1"
+    },
+    "devDependencies": {
+        "turbo": "^1.11.3"
     }
 }

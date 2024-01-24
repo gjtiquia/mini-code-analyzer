@@ -7,7 +7,7 @@ import { NullLogger } from "./loggers";
 
 export async function analyzeAsync(parameters: Parameters): Promise<FileData[]> {
 
-    printHeader(parameters);
+    // printHeader(parameters);
 
     const rootDirectoryPath = parameters.rootDirectory;
     const targetExtensions = parameters.targetExtensions;
