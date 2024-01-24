@@ -21,7 +21,7 @@ export async function analyzeAsync(parameters: Parameters): Promise<FileData[]> 
 
     const result = await analyzeDirectoryAsync(parameters, rootDirectoryPath);
 
-    logger.clear();
+    // logger.clear();
 
     printHeader(parameters);
 
