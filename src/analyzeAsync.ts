@@ -1,4 +1,5 @@
 import path from "path"
+import fs from "fs"
 import fsAsync from "fs/promises"
 import { isDirectory, readLinesAsync } from "./utils";
 import { Parameters, FileData, Logger } from "./interfaces";
@@ -11,6 +12,12 @@ export async function analyzeAsync(parameters: Parameters): Promise<FileData[]> 
     const rootDirectoryPath = parameters.rootDirectory;
     const targetExtensions = parameters.targetExtensions;
     const logger: Logger = parameters.logger ?? new NullLogger();
+
+    const exists = fs.existsSync(rootDirectoryPath);
+    if (!exists) {
+        logger.log(`The path "${rootDirectoryPath}" does not exist!`)
+        return [];
+    }
 
     const result = await analyzeDirectoryAsync(parameters, rootDirectoryPath);
 
@@ -57,6 +64,12 @@ async function analyzeDirectoryAsync(parameters: Parameters, directoryPath: stri
         return output;
 
     const logger: Logger = parameters.logger ?? new NullLogger();
+
+    const exists = fs.existsSync(directoryPath);
+    if (!exists) {
+        logger.log(`The path "${directoryPath}" does not exist! Ignoring...`)
+        return output
+    }
 
     logger.log(`Analyzing ${directoryPath}...`);
 

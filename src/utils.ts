@@ -1,7 +1,6 @@
 import fs from "fs";
 import readline from "readline";
 
-
 export function isDirectory(filePath: string): boolean {
     return fs.lstatSync(filePath).isDirectory();
 }
