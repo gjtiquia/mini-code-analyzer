@@ -1,11 +1,15 @@
 {
   "name": "mini-code-analyzer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "GJ Tiquia",
   "license": "MIT",
   "bin": "dist/bin.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/bin.ts",
+    "build": "tsup src/bin.ts src/index.ts --format cjs,esm --dts --clean",
+    "dev": "npm run build -- --watch",
     "test": "jest"
   },
   "devDependencies": {
