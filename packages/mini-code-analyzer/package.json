@@ -1,12 +1,35 @@
 {
   "name": "mini-code-analyzer",
-  "version": "0.1.0",
-  "author": "GJ Tiquia",
+  "description": "A simple CLI tool to analyze the lines of code of scripts.",
+  "version": "1.0.0",
+  "author": "gjtiquia",
   "license": "MIT",
-  "bin": "dist/bin.js",
+  "homepage": "https://github.com/gjtiquia/mini-code-analyzer#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gjtiquia/mini-code-analyzer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gjtiquia/mini-code-analyzer/issues"
+  },
+  "keywords": [
+    "cli",
+    "command-line",
+    "command-line-tool",
+    "code-analysis",
+    "lines-of-code",
+    "loc"
+  ],
+  "bin": {
+    "mini-code-analyzer": "dist/bin.js"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "src/**/*"
+  ],
   "scripts": {
     "build": "tsup src/bin.ts src/index.ts --format cjs,esm --dts --clean",
     "dev": "npm run build -- --watch",
