@@ -1,6 +1,6 @@
 {
   "name": "mini-code-analyzer",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "author": "GJ Tiquia",
   "license": "MIT",
   "bin": "dist/bin.js",
