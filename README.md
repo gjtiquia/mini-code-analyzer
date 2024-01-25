@@ -2,6 +2,12 @@
 
 A simple CLI tool to analyze the lines of code of scripts if it reaches a maximum threshold.
 
+## Prerequisites
+
+You have Node.js installed on your machine.
+- [Install via NVM](https://github.com/nvm-sh/nvm#readme) (Recommended); or
+- [Download latest LTS version](https://nodejs.org/en/download/)
+
 ## Quick Start
 
 Analyze current working directory with default parameters.
